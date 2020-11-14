@@ -40,6 +40,20 @@ app.post('/enviarOrcamentoLacerda', upload().single('anexo'), (req, res) => {
         .catch(error => res.json(error));
 })
 
+app.post('/enviarOrcamentoVilhena', upload().single('anexo'), (req, res) => { 
+    const nome = req.body.nome;
+    const email = req.body.email;
+    const celular = req.body.celular;
+    const cidade = req.body.cidade;
+    const unidade = req.body.unidade;
+    const valorMedio = req.body.valorMedio;
+    const tipoCliente = req.body.tipoCliente;
+    const anexo = req.file;
+    require("./nodemailVilhena")(email, nome, celular, cidade, unidade, valorMedio, anexo, tipoCliente)
+        .then(response => res.json(response))
+        .catch(error => res.json(error));
+})
+
 
 const server = http.createServer(app); 
 server.listen(process.env.PORT || 3030);
