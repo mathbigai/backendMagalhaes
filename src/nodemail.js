@@ -3,7 +3,7 @@ require("dotenv");
 
 module.exports = (email, nome, comentario, celular, cidade, unidade) => {
     const smtpTransport = mailer.createTransport({
-        host: 'mail.magalhaesengenharia.com',
+        host: 'stmp.gmail.com',
         port: 587,
         secure: false, //SSL/TLS
         auth: {
