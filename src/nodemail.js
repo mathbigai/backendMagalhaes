@@ -5,7 +5,7 @@ module.exports = (email, nome, comentario, celular, cidade, unidade) => {
     const smtpTransport = mailer.createTransport({
         host: 'mail.magalhaesengenharia.com',
         port: 465,
-        secure: false, //SSL/TLS
+        secure: true, //SSL/TLS
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.PASS_USER
