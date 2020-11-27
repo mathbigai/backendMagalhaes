@@ -21,7 +21,6 @@ app.post('/enviarContato', upload().single('anexo'), (req, res) => {
     const celular = req.body.celular;
     const cidade = req.body.cidade;
     const unidade = req.body.unidade;
-    res.json({message: "Tudo ok por aqui!"});
     require("./nodemail")(email, nome, comentario, celular, cidade, unidade)
         .then(response => res.json(response))
         .catch(error => res.json(error));
@@ -36,7 +35,6 @@ app.post('/enviarOrcamentoLacerda', upload().single('anexo'), (req, res) => {
     const valorMedio = req.body.valorMedio;
     const tipoCliente = req.body.tipoCliente;
     const anexo = req.file;
-    res.json({message: "Tudo ok por aqui!"});
     require("./nodemailLacerda")(email, nome, celular, cidade, unidade, valorMedio, anexo, tipoCliente)
         .then(response => res.json(response))
         .catch(error => res.json(error));
@@ -51,7 +49,6 @@ app.post('/enviarOrcamentoVilhena', upload().single('anexo'), (req, res) => {
     const valorMedio = req.body.valorMedio;
     const tipoCliente = req.body.tipoCliente;
     const anexo = req.file;
-    res.json({message: "Tudo ok por aqui!"});
     require("./nodemailVilhena")(email, nome, celular, cidade, unidade, valorMedio, anexo, tipoCliente)
         .then(response => res.json(response))
         .catch(error => res.json(error));
