@@ -13,7 +13,7 @@ module.exports = (email, nome, comentario, celular, cidade, unidade) => {
     })
     
     const mail = {
-        from: "Site Magalhães Engenharia <issidios@gmail.com>",
+        from: "Site Magalhães Engenharia <noreply@magalhaesengenharia.com>",
         to: "engenharia@magalhaesengenharia.com",
         subject: `${nome} te enviou uma mensagem`,
         html: `Olá Magalhães Engenharia, unidade de ${unidade} <br/>
