@@ -14,7 +14,7 @@ module.exports = (email, nome, celular, cidade, unidade, valorMedio, anexo, tipo
     
     const mail = {
         from: "Site Magalhães Engenharia <noreply@magalhaesengenharia.com>",
-        to: "vendas.vlh@magalhaesengenharia.com",
+        to: "vendas.vlh@magalhaesengenharia.com, vendas1.vlh@magalhaesengenharia.com",
         subject: `${nome} solicitou um novo orçamento`,
         html: `Olá Magalhães Engenharia, unidade de ${unidade} <br/>
         <b>${nome}</b>, de ${cidade}, solicitou um novo orçamento, segue as informações para análise: <br/><br/>
