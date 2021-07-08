@@ -54,6 +54,27 @@ app.post('/enviarOrcamentoVilhena', upload().single('anexo'), (req, res) => {
         .catch(error => res.json(error));
 })
 
+app.post('/enviarPedidoAnalise', upload().single('anexo'), (req, res) => { 
+    const nome = req.body.nome;
+    const email = req.body.email;
+    const celular = req.body.celular;
+    const cidade = req.body.cidade;
+    const unidade = req.body.unidade;
+    const valorTotal = req.body.valorTotal;
+    require("./nodemailVilhena")(email, nome, celular, cidade, unidade, valorTotal)
+        .then(response => res.json(response))
+        .catch(error => res.json(error));
+})
+
+app.post('/enviarPedidoAprovado', upload().single('anexo'), (req, res) => { 
+    const nome = req.body.nome;
+    const email = req.body.email;
+    const id = req.body.id;
+    require("./nodemailPedidoSituacaoAprovado")(email, nome, id)
+        .then(response => res.json(response))
+        .catch(error => res.json(error));
+})
+
 
 const server = http.createServer(app); 
 server.listen(process.env.PORT || 3030);
