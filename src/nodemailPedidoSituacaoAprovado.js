@@ -17,7 +17,7 @@ module.exports = (email, nome, id) => {
         to: `${email}`,
         subject: `Seu pedido #${id} teve a situação atualizada`,
         html: `Olá <b>${nome}</b>,<br/>
-       Seu pedido foi aprovado para pagamento.</br>
+       Seu pedido <a href='magalhaesengenharia.com/loja/pedido/${id}'>#${id}</a> foi aprovado para pagamento.
        Acesse esse <a href='magalhaesengenharia.com/loja/pedido/${id}'>link</a> para finalizar seu pedido.
        
        <br/><br/>
