@@ -59,9 +59,8 @@ app.post('/enviarPedidoAnalise', upload().single('anexo'), (req, res) => {
     const email = req.body.email;
     const celular = req.body.celular;
     const cidade = req.body.cidade;
-    const id = req.body.id;
     const valorTotal = req.body.valorTotal;
-    require("./nodemailVilhena")(email, nome, celular, cidade, id, valorTotal)
+    require("./nodemailVilhena")(email, nome, celular, cidade, valorTotal)
         .then(response => res.json(response))
         .catch(error => res.json(error));
 })
