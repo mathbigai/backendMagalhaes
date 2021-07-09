@@ -25,15 +25,6 @@ module.exports = (email, nome, celular, cidade, valorTotal) => {
         Para mais informações acesse esse <a href='http://magalhaesengenharia.com/admin/pedido/'>link</a>.
         `
     }
-
-    if(anexo){
-        console.log(anexo);
-        mail.attachments = [];
-        mail.attachments.push({
-            filename: anexo.originalname,
-            content: anexo.buffer
-        })
-    }
     
     return new Promise((resolve, reject) => {
         smtpTransport.sendMail(mail)
