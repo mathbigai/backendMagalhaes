@@ -14,7 +14,7 @@ module.exports = (email, nome, id) => {
 
     const mail = {
         from: "Site Magalhães Engenharia <noreply@magalhaesengenharia.com>",
-        to: `${email}`,
+        to: `issidios@gmail.com`,
         subject: `Seu pedido #${id} teve a situação atualizada`,
         html: `Olá <b>${nome}</b>,<br/>
        Seu pedido #${id} foi aprovado para pagamento.
