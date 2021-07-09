@@ -17,13 +17,13 @@ module.exports = (email, nome, id) => {
         to: `${email}`,
         subject: `Seu pedido #${id} teve a situação atualizada`,
         html: `Olá <b>${nome}</b>,<br/>
-        Seu pedido #${id} precisa ser averiguado mais de perto, 
+        Seu pedido <a href='magalhaesengenharia.com/loja/pedido/${id}'>#${id}</a> precisa ser averiguado mais de perto, 
         portanto não será possível finalizá-lo neste momento.</br> 
         Mas não se preocupe, logo entraremos em contato com mais informações.
        
        <br/><br/>
-       A equipe Magalhães Engenharia agradece a preferência.
-       Att.<br/>
+       A equipe Magalhães Engenharia agradece a preferência.<br/>
+       Att.
         `
     }
 
