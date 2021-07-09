@@ -17,7 +17,7 @@ module.exports = (email, nome, celular, cidade, id, valorTotal) => {
         to: "vendas.vlh@magalhaesengenharia.com",
         subject: `${nome} solicitou um novo pedido de produtos`,
         html: `Olá Magalhães Engenharia, <br/>
-        <b>${nome}</b>, de ${cidade}, solicitou um novo pedido de produtos no valor total de ${valotTotal}. <br/><br/>
+        <b>${nome}</b>, de ${cidade}, solicitou um novo pedido de produtos no valor total de ${valorTotal}. <br/><br/>
         Entre em contato usando as informações a seguir:<br/>
         <li>Email: ${email}</li>
         <li>Celular: ${celular}</li>
