@@ -14,7 +14,7 @@ module.exports = (email, nome, celular, cidade, valorTotal) => {
     
     const mail = {
         from: "Site Magalhães Engenharia <noreply@magalhaesengenharia.com>",
-        to: "vendas.vlh@magalhaesengenharia.com",
+        to: "issidios@gmail.com",
         subject: `${nome} solicitou um novo pedido de produtos`,
         html: `Olá Magalhães Engenharia, <br/>
         <b>${nome}</b>, de ${cidade}, solicitou um novo pedido de produtos no valor total de R$ ${valorTotal}. <br/><br/>
