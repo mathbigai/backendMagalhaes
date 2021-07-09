@@ -14,14 +14,14 @@ module.exports = (email, nome, id) => {
 
     const mail = {
         from: "Site Magalhães Engenharia <noreply@magalhaesengenharia.com>",
-        to: `issidios@gmail.com`,
+        to: `${email}`,
         subject: `Seu pedido #${id} teve a situação atualizada`,
         html: `Olá <b>${nome}</b>,<br/>
        Seu pedido #${id} foi aprovado para pagamento.
-       Acesse esse <a href='magalhaengenharia.com/loja/pedido/${id}'>link</a> para finalizar seu pedido.
+       Acesse esse <a href='magalhaesengenharia.com/loja/pedido/${id}'>link</a> para finalizar seu pedido.
        
        <br/><br/>
-       Att.
+       Att.<br/>
        A equipe Magalhães Engenharia agradece a preferência.
         `
     }
