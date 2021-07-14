@@ -122,8 +122,8 @@ module.exports = (email, nome, id) => {
        <td align="left" style="padding:0;Margin:0">
        <p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">
        Olá <b>${nome}</b>,<br/>
-       Seu pedido <a href='magalhaesengenharia.com/loja/pedido/${id}'>#${id}</a> foi aprovado para pagamento.
-       Acesse esse <a href='magalhaesengenharia.com/loja/pedido/${id}'>link</a> para finalizar seu pedido.
+       Seu pedido <a href='magalhaesengenharia.com/loja/pedido/${id}'>#${id}</a> foi análisado e será finalizado juntamente com a nossa equipe.
+       Aguarde nosso contato para mais informações.
        
        <br/><br/>
        A equipe Magalhães Engenharia agradece a preferência.<br/>
