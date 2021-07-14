@@ -83,6 +83,15 @@ app.post('/enviarPedidoReprovado', upload().single('anexo'), (req, res) => {
         .catch(error => res.json(error));
 })
 
+app.post('/enviarPedidoAguardando', upload().single('anexo'), (req, res) => { 
+    const nome = req.body.nome;
+    const email = req.body.email;
+    const id = req.body.id;
+    require("./nodemailPedidoSituacaoAguardando")(email, nome, id)
+        .then(response => res.json(response))
+        .catch(error => res.json(error));
+})
+
 
 const server = http.createServer(app); 
 server.listen(process.env.PORT || 3030);
