@@ -105,7 +105,8 @@ app.post("/stripe/charge", cors(), async (req, res) => {
       description: description,
       payment_method: id,
       confirm: true,
-      payment_method_types: ['card', 'boleto']
+      payment_method_types: ['card', 'boleto'],
+      client_secret
     });
     console.log("stripe-routes.js 19 | payment", payment);
     res.json({
