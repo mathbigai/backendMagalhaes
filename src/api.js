@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 const upload = require("multer");
 require("dotenv");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST);
+const bodyParser = require("body-parser");
+const cors = require("cors");
 app.use(require("cors")());
 app.use(bodyParser.json());
 
