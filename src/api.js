@@ -92,6 +92,32 @@ app.post('/enviarPedidoAguardando', upload().single('anexo'), (req, res) => {
         .catch(error => res.json(error));
 })
 
+app.post("/stripe/charge", cors(), async (req, res) => {
+    console.log("stripe-routes.js 9 | route reached", req.body);
+    let { amount, id } = req.body;
+    console.log("stripe-routes.js 10 | amount and id", amount, id);
+    try {
+      const payment = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "BRL",
+        description: "Magalhães Engenharia Elétrica",
+        payment_method: id,
+        confirm: true,
+      });
+      console.log("stripe-routes.js 19 | payment", payment);
+      res.json({
+        message: "Pagamento realizado com sucesso",
+        success: true,
+      });
+    } catch (error) {
+      console.log("stripe-routes.js 17 | error", error);
+      res.json({
+        message: "Erro ao realizar pagamento",
+        success: false,
+      });
+    }
+  });
+
 
 const server = http.createServer(app); 
 server.listen(process.env.PORT || 3030);
