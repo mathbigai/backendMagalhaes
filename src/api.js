@@ -96,14 +96,15 @@ app.post('/enviarPedidoAguardando', upload().single('anexo'), (req, res) => {
 
 app.post("/stripe/charge", cors(), async (req, res) => {
   console.log("stripe-routes.js 9 | route reached", req.body);
-  let { amount, id, description } = req.body;
-  console.log("stripe-routes.js 10 | amount and id", amount, id, description);
+  let { amount, id, description, customer } = req.body;
+  console.log("stripe-routes.js 10 | amount and id", amount, id, description, customer);
   try {
     const payment = await stripe.paymentIntents.create({
       amount: amount,
       currency: "BRL",
       description: description,
       payment_method: id,
+      customer: customer,
       confirm: true,
     });
     console.log("stripe-routes.js 19 | payment", payment);
