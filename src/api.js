@@ -111,9 +111,11 @@ app.post("/stripe/charge", cors(), async (req, res) => {
         console.log("stripe-routes.js 19 | payment", payment.client_secret);
         res.json({
             message: "Payment Successful",
-            success: true,
-            client_secret: payment.client_secret,
+            success: true
         });
+        res.send({
+            clientSecret: payment.client_secret
+          });
     } catch (error) {
         console.log("stripe-routes.js 17 | error", error);
         res.json({
@@ -121,18 +123,6 @@ app.post("/stripe/charge", cors(), async (req, res) => {
             success: false,
         });
     }
-})
-
-app.post("/stripe/charge/secret", cors(), async (req, res) => {
-    let { amount } = req.body;
-    const intent = await stripe.paymentIntents.create({
-        amount: amount,
-        currency: 'brl',
-        // Verify your integration in this guide by including this parameter
-        metadata: {integration_check: 'accept_a_payment'},
-    })
-    console.log(intent)
-        res.json({ client_secret: intent.client_secret });
 })
 
 
