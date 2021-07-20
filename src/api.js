@@ -131,6 +131,7 @@ app.post("/stripe/charge/secret", cors(), async (req, res) => {
             currency: "BRL",
         });
         res.json({
+            success: true,
             clientSecret: payment.client_secret
         });
     } catch (error) {
