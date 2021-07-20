@@ -136,7 +136,7 @@ app.post("/stripe/charge/secret", cors(), async (req, res) => {
             message: "Payment Successful",
             success: true,
             clientSecret: payment.client_secret,
-            next_action: payment.next_action
+            nextAction: payment.next_action
         });
     } catch (error) {
         res.json({
