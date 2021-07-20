@@ -111,7 +111,8 @@ app.post("/stripe/charge", cors(), async (req, res) => {
         console.log("stripe-routes.js 19 | payment", payment.client_secret);
         res.json({
             message: "Payment Successful",
-            success: true
+            success: true,
+            clientSecret: payment.client_secret
         });
         res.send({
             clientSecret: payment.client_secret
