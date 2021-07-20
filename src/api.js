@@ -1,4 +1,4 @@
-const http = require('http'); 
+const http = require('http');
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -10,13 +10,13 @@ app.use(require("cors")());
 app.use(bodyParser.json());
 
 app.use(express.json());
-app.use(express.urlencoded({extended: true}))
+app.use(express.urlencoded({ extended: true }))
 
 app.get('/', (req, res, next) => {
-    res.json({message: "Tudo ok por aqui!"});
+    res.json({ message: "Tudo ok por aqui!" });
 })
 
-app.post('/enviarContato', upload().single('anexo'), (req, res) => { 
+app.post('/enviarContato', upload().single('anexo'), (req, res) => {
     const nome = req.body.nome;
     const email = req.body.email;
     const comentario = req.body.comentario;
@@ -28,7 +28,7 @@ app.post('/enviarContato', upload().single('anexo'), (req, res) => {
         .catch(error => res.json(error));
 })
 
-app.post('/enviarOrcamentoLacerda', upload().single('anexo'), (req, res) => { 
+app.post('/enviarOrcamentoLacerda', upload().single('anexo'), (req, res) => {
     const nome = req.body.nome;
     const email = req.body.email;
     const celular = req.body.celular;
@@ -42,7 +42,7 @@ app.post('/enviarOrcamentoLacerda', upload().single('anexo'), (req, res) => {
         .catch(error => res.json(error));
 })
 
-app.post('/enviarOrcamentoVilhena', upload().single('anexo'), (req, res) => { 
+app.post('/enviarOrcamentoVilhena', upload().single('anexo'), (req, res) => {
     const nome = req.body.nome;
     const email = req.body.email;
     const celular = req.body.celular;
@@ -56,7 +56,7 @@ app.post('/enviarOrcamentoVilhena', upload().single('anexo'), (req, res) => {
         .catch(error => res.json(error));
 })
 
-app.post('/enviarPedidoAnalise', upload().single('anexo'), (req, res) => { 
+app.post('/enviarPedidoAnalise', upload().single('anexo'), (req, res) => {
     const nome = req.body.nome;
     const email = req.body.email;
     const celular = req.body.celular;
@@ -67,7 +67,7 @@ app.post('/enviarPedidoAnalise', upload().single('anexo'), (req, res) => {
         .catch(error => res.json(error));
 })
 
-app.post('/enviarPedidoAprovado', upload().single('anexo'), (req, res) => { 
+app.post('/enviarPedidoAprovado', upload().single('anexo'), (req, res) => {
     const nome = req.body.nome;
     const email = req.body.email;
     const id = req.body.id;
@@ -76,7 +76,7 @@ app.post('/enviarPedidoAprovado', upload().single('anexo'), (req, res) => {
         .catch(error => res.json(error));
 })
 
-app.post('/enviarPedidoReprovado', upload().single('anexo'), (req, res) => { 
+app.post('/enviarPedidoReprovado', upload().single('anexo'), (req, res) => {
     const nome = req.body.nome;
     const email = req.body.email;
     const id = req.body.id;
@@ -85,7 +85,7 @@ app.post('/enviarPedidoReprovado', upload().single('anexo'), (req, res) => {
         .catch(error => res.json(error));
 })
 
-app.post('/enviarPedidoAguardando', upload().single('anexo'), (req, res) => { 
+app.post('/enviarPedidoAguardando', upload().single('anexo'), (req, res) => {
     const nome = req.body.nome;
     const email = req.body.email;
     const id = req.body.id;
@@ -95,34 +95,45 @@ app.post('/enviarPedidoAguardando', upload().single('anexo'), (req, res) => {
 })
 
 app.post("/stripe/charge", cors(), async (req, res) => {
-  console.log("stripe-routes.js 9 | route reached", req.body);
-  let { amount, id, description } = req.body;
-  console.log("stripe-routes.js 10 | amount and id", amount, id, description);
-  try {
-    const payment = await stripe.paymentIntents.create({
-      amount: amount,
-      currency: "BRL",
-      description: description,
-      payment_method: id,
-      confirm: true,
-      payment_method_types: ['card', 'boleto'],
-    });
-    console.log("stripe-routes.js 19 | payment", payment);
-    console.log("stripe-routes.js 19 | payment", payment.client_secret);
-    res.json({
-      message: "Payment Successful",
-      success: true,
-      client_secret: payment.client_secret,
-    });
-  } catch (error) {
-    console.log("stripe-routes.js 17 | error", error);
-    res.json({
-      message: "Payment Failed",
-      success: false,
-    });
-  }
+    console.log("stripe-routes.js 9 | route reached", req.body);
+    let { amount, id, description } = req.body;
+    console.log("stripe-routes.js 10 | amount and id", amount, id, description);
+    try {
+        const payment = await stripe.paymentIntents.create({
+            amount: amount,
+            currency: "BRL",
+            description: description,
+            payment_method: id,
+            confirm: true,
+            payment_method_types: ['card', 'boleto'],
+        });
+        console.log("stripe-routes.js 19 | payment", payment);
+        console.log("stripe-routes.js 19 | payment", payment.client_secret);
+        res.json({
+            message: "Payment Successful",
+            success: true,
+            client_secret: payment.client_secret,
+        });
+    } catch (error) {
+        console.log("stripe-routes.js 17 | error", error);
+        res.json({
+            message: "Payment Failed",
+            success: false,
+        });
+    }
+})
+
+app.post("/stripe/charge/secret", cors(), async (req, res) => {
+    let { amount } = req.body;
+    const intent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: 'brl',
+        // Verify your integration in this guide by including this parameter
+        metadata: {integration_check: 'accept_a_payment'},
+    })
+        res.json({ client_secret: intent.client_secret });
 })
 
 
-const server = http.createServer(app); 
+const server = http.createServer(app);
 server.listen(process.env.PORT || 3030);
