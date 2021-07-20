@@ -130,8 +130,10 @@ app.post("/stripe/charge/secret", cors(), async (req, res) => {
             amount: amount,
             currency: "BRL",
             payment_method_types: ['boleto'],
+            description: 'Magalhães Engenharia Elétrica - Boleto'
         });
         res.json({
+            message: "Payment Successful",
             success: true,
             clientSecret: payment.client_secret
         });
