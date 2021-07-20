@@ -106,12 +106,12 @@ app.post("/stripe/charge", cors(), async (req, res) => {
       payment_method: id,
       confirm: true,
       payment_method_types: ['card', 'boleto'],
-      client_secret
     });
     console.log("stripe-routes.js 19 | payment", payment);
     res.json({
       message: "Payment Successful",
       success: true,
+      client_secret: payment.client_secret,
     });
   } catch (error) {
     console.log("stripe-routes.js 17 | error", error);
