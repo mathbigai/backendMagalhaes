@@ -131,6 +131,7 @@ app.post("/stripe/charge/secret", cors(), async (req, res) => {
         // Verify your integration in this guide by including this parameter
         metadata: {integration_check: 'accept_a_payment'},
     })
+    console.log(intent)
         res.json({ client_secret: intent.client_secret });
 })
 
