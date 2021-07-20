@@ -112,13 +112,28 @@ app.post("/stripe/charge", cors(), async (req, res) => {
         res.json({
             message: "Payment Successful",
             success: true,
-            clientSecret: payment.client_secret
+            client_secret: payment.client_secret,
         });
-        res.send({
-            clientSecret: payment.client_secret
-          });
     } catch (error) {
         console.log("stripe-routes.js 17 | error", error);
+        res.json({
+            message: "Payment Failed",
+            success: false,
+        });
+    }
+})
+
+app.post("/stripe/charge/secret", cors(), async (req, res) => {
+    let { amount } = req.body;
+    try {
+        const payment = await stripe.paymentIntents.create({
+            amount: amount,
+            currency: "BRL",
+        });
+        res.json({
+            clientSecret: payment.client_secret
+        });
+    } catch (error) {
         res.json({
             message: "Payment Failed",
             success: false,
