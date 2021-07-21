@@ -124,13 +124,13 @@ app.post("/stripe/charge", cors(), async (req, res) => {
 })
 
 app.post("/stripe/charge/secret", cors(), async (req, res) => {
-    let { amount } = req.body;
+    let { amount, description } = req.body;
     try {
         const payment = await stripe.paymentIntents.create({
             amount: amount,
             currency: "BRL",
-            payment_method_types: ['boleto'],
-            description: 'Magalhães Engenharia Elétrica - Boleto'
+            payment_method_types: ['boleto', 'card'],
+            description: description
         });
         res.json({
             message: "Payment Successful",
