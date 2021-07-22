@@ -120,12 +120,13 @@ app.post("/stripe/charge/secret", cors(), async (req, res) => {
 
 app.post('/webhooks', async (req, res) => {
     let data, eventType;
-
+    console.log()
     // Check if webhook signing is configured.
     if (process.env.STRIPE_WEBHOOK_SECRET) {
         // Retrieve the event by verifying the signature using the raw body and secret.
         let event;
         let signature = req.headers['stripe-signature'];
+        console.log(signature)
         try {
             event = stripe.webhooks.constructEvent(
                 req.rawBody,
