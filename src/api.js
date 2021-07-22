@@ -6,6 +6,8 @@ require("dotenv");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST);
 const cors = require("cors");
 app.use(require("cors")());
+const bodyParser = require('body-parser');
+
 app.use(bodyParser.json({
     verify: function (req, res, buf) {
         var url = req.originalUrl;
