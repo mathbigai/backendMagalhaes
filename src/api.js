@@ -126,7 +126,7 @@ app.post('/webhooks', async (req, res) => {
         // Retrieve the event by verifying the signature using the raw body and secret.
         let event;
         let signature = req.headers['stripe-signature'];
-        console.log(signature)
+        console.log(process.env.STRIPE_WEBHOOK_SECRET)
         try {
             event = stripe.webhooks.constructEvent(
                 req.rawBody,
