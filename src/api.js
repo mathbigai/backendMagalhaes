@@ -5,8 +5,6 @@ const bodyParser = require('body-parser');
 const upload = require("multer");
 require("dotenv");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST);
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
 const cors = require("cors");
 app.use(require("cors")());
 app.use(bodyParser.json());
@@ -120,25 +118,43 @@ app.post("/stripe/charge/secret", cors(), async (req, res) => {
     }
 })
 
-app.post('/webhooks', express.raw({type: 'application/json'}), (req, res) => {
-    const sig = req.headers['stripe-signature'];
-  
-    let event;
-  
-    try {
-      event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
-    } catch (err) {
-      // On error, log and return the error message
-      console.log(`❌ Error message: ${err.message}`);
-      return res.status(400).send(`Webhook Error: ${err.message}`);
+app.post('/webhooks', async (req, res) => {
+    let data, eventType;
+
+    // Check if webhook signing is configured.
+    if (process.env.STRIPE_WEBHOOK_SECRET) {
+        // Retrieve the event by verifying the signature using the raw body and secret.
+        let event;
+        let signature = req.headers['stripe-signature'];
+        try {
+            event = stripe.webhooks.constructEvent(
+                req.rawBody,
+                signature,
+                process.env.STRIPE_WEBHOOK_SECRET
+            );
+        } catch (err) {
+            console.log(`⚠️  Webhook signature verification failed.`);
+            return res.sendStatus(400);
+        }
+        data = event.data;
+        eventType = event.type;
+    } else {
+        // Webhook signing is recommended, but if the secret is not configured in `config.js`,
+        // we can retrieve the event data directly from the request body.
+        data = req.body.data;
+        eventType = req.body.type;
     }
-  
-    // Successfully constructed event
-    console.log('✅ Success:', event.id);
-  
-    // Return a response to acknowledge receipt of the event
-    res.json({received: true});
-  });
+
+    if (eventType === 'payment_intent.succeeded') {
+        // Funds have been captured
+        // Fulfill any orders, e-mail receipts, etc
+        // To cancel the payment after capture you will need to issue a Refund (https://stripe.com/docs/api/refunds)
+        console.log('💰 Payment captured!');
+    } else if (eventType === 'payment_intent.payment_failed') {
+        console.log('❌ Payment failed.');
+    }
+    res.sendStatus(200);
+});
 
 
 const server = http.createServer(app);
