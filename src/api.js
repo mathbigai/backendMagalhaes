@@ -7,7 +7,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST);
 const cors = require("cors");
 app.use(require("cors")());
 const bodyParser = require('body-parser');
-
+app.use(require('body-parser').raw({type: '*/*'}));
 app.use(bodyParser.json({
     verify: function (req, res, buf) {
         var url = req.originalUrl;
@@ -16,6 +16,7 @@ app.use(bodyParser.json({
         }
     }
 }));
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
@@ -131,7 +132,6 @@ app.post('/webhooks', (req, res) => {
     let sig = req.headers["stripe-signature"];
 
     try {
-        console.log(sig)
         let event = stripe.webhooks.constructEvent(req.bodyRaw, sig, process.env.STRIPE_WEBHOOK_SECRET);
         console.log(event);
         res.status(200).end()
