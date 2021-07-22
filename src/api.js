@@ -124,7 +124,7 @@ app.post('/webhooks', (req, res) => {
 
     try {
         console.log(req.bodyRaw)
-        let event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+        let event = stripe.webhooks.constructEvent(req.bodyRaw, sig, process.env.STRIPE_WEBHOOK_SECRET);
         console.log(event);
         res.status(200).end()
 
