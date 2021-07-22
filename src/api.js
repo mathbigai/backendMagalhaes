@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 const upload = require("multer");
 require("dotenv");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST);
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
 const cors = require("cors");
 app.use(require("cors")());
 app.use(bodyParser.json());
@@ -118,31 +120,25 @@ app.post("/stripe/charge/secret", cors(), async (req, res) => {
     }
 })
 
-app.post('/webhooks', (req, res) => {
+app.post('/webhooks', express.raw({type: 'application/json'}), (req, res) => {
     const sig = req.headers['stripe-signature'];
+  
     let event;
-
+  
     try {
-        event = stripe.webhooks.constructEvent(req.rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
+      event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+    } catch (err) {
+      // On error, log and return the error message
+      console.log(`❌ Error message: ${err.message}`);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
     }
-    catch (err) {
-        return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
-    // Handle the event
-    switch (event.type) {
-        case 'charge.succeeded': {
-            const email = event['data']['object']['receipt_email'] // contains the email that will recive the recipt for the payment (users email usually)
-            console.log(`PaymentIntent was successful for ${email}!`)
-            break;
-    }
-      default:
-    // Unexpected event type
-    return res.status(400).end();
-}
-
-    // Return a 200 response to acknowledge receipt of the event
-    res.json({ received: true });
-  })
+  
+    // Successfully constructed event
+    console.log('✅ Success:', event.id);
+  
+    // Return a response to acknowledge receipt of the event
+    res.json({received: true});
+  });
 
 
 const server = http.createServer(app);
