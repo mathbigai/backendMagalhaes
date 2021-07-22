@@ -119,25 +119,29 @@ app.post("/stripe/charge/secret", cors(), async (req, res) => {
 })
 
 app.post('/webhooks', (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    let event;
+
     try {
-        const webhookEndpoint = await stripe.webhookEndpoints.create({
-            url: 'https://magalhaesbackend.herokuapp.com/webhooks',
-            enabled_events: [
-              'charge.failed',
-              'charge.succeeded',
-            ],
-          });
-          res.json({
-            message: "Payment Successful",
-            success: true,
-        });
-        console.log(webhookEndpoint)
-    } catch (error) {
-        res.json({
-            message: "Payment Failed",
-            success: false,
-        });
+        event = stripe.webhooks.constructEvent(req.rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
     }
+    catch (err) {
+        return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+    // Handle the event
+    switch (event.type) {
+        case 'charge.succeeded': {
+            const email = event['data']['object']['receipt_email'] // contains the email that will recive the recipt for the payment (users email usually)
+            console.log(`PaymentIntent was successful for ${email}!`)
+            break;
+    }
+      default:
+    // Unexpected event type
+    return res.status(400).end();
+}
+
+    // Return a 200 response to acknowledge receipt of the event
+    res.json({ received: true });
   })
 
 
