@@ -118,43 +118,55 @@ app.post("/stripe/charge/secret", cors(), async (req, res) => {
     }
 })
 
-app.post('/webhook', async (req, res) => {
-    let data, eventType;
-
-    // Check if webhook signing is configured.
-    if (process.env.STRIPE_WEBHOOK_SECRET) {
-        // Retrieve the event by verifying the signature using the raw body and secret.
+app.post('/webhooks', (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    let event;
+  
+    try {
+      event = stripe.webhooks.constructEvent(req.rawBody, sig, app.post('/webhooks', (req, res) => {
+        const sig = req.headers['stripe-signature'];
         let event;
-        let signature = req.headers['stripe-signature'];
+      
         try {
-            event = stripe.webhooks.constructEvent(
-                req.rawBody,
-                signature,
-                process.env.STRIPE_WEBHOOK_SECRET
-            );
-        } catch (err) {
-            console.log(`⚠️  Webhook signature verification failed.`);
-            return res.sendStatus(400);
+          event = stripe.webhooks.constructEvent(req.rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
         }
-        data = event.data;
-        eventType = event.type;
-    } else {
-        // Webhook signing is recommended, but if the secret is not configured in `config.js`,
-        // we can retrieve the event data directly from the request body.
-        data = req.body.data;
-        eventType = req.body.type;
+        catch (err) {
+          return res.status(400).send(`Webhook Error: ${err.message}`);
+        }
+        // Handle the event
+        switch (event.type) {
+          case 'charge.succeeded': {
+            const email = event['data']['object']['receipt_email'] // contains the email that will recive the recipt for the payment (users email usually)
+            console.log(`PaymentIntent was successful for ${email}!`)
+            break;
+          }
+          default:
+            // Unexpected event type
+            return res.status(400).end();
+        }
+      
+        // Return a 200 response to acknowledge receipt of the event
+        res.json({received: true});
+      }));
     }
-
-    if (eventType === 'payment_intent.succeeded') {
-        // Funds have been captured
-        // Fulfill any orders, e-mail receipts, etc
-        // To cancel the payment after capture you will need to issue a Refund (https://stripe.com/docs/api/refunds)
-        console.log('💰 Payment captured!');
-    } else if (eventType === 'payment_intent.payment_failed') {
-        console.log('❌ Payment failed.');
+    catch (err) {
+      return res.status(400).send(`Webhook Error: ${err.message}`);
     }
-    res.sendStatus(200);
-});
+    // Handle the event
+    switch (event.type) {
+      case 'payment_intent.succeeded': {
+        const email = event['data']['object']['receipt_email'] // contains the email that will recive the recipt for the payment (users email usually)
+        console.log(`PaymentIntent was successful for ${email}!`)
+        break;
+      }
+      default:
+        // Unexpected event type
+        return res.status(400).end();
+    }
+  
+    // Return a 200 response to acknowledge receipt of the event
+    res.json({received: true});
+  })
 
 
 const server = http.createServer(app);
