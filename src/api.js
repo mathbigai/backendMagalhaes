@@ -1,13 +1,19 @@
 const http = require('http');
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser');
 const upload = require("multer");
 require("dotenv");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST);
 const cors = require("cors");
 app.use(require("cors")());
-app.use(bodyParser.json());
+app.use(bodyParser.json({
+    verify: function (req, res, buf) {
+        var url = req.originalUrl;
+        if (url.startsWith('/webhooks')) {
+            req.rawBody = buf.toString()
+        }
+    }
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
@@ -123,7 +129,7 @@ app.post('/webhooks', (req, res) => {
     let sig = req.headers["stripe-signature"];
 
     try {
-        console.log(req.bodyRaw)
+        console.log(sig)
         let event = stripe.webhooks.constructEvent(req.bodyRaw, sig, process.env.STRIPE_WEBHOOK_SECRET);
         console.log(event);
         res.status(200).end()
