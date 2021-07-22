@@ -134,7 +134,7 @@ app.post('/webhooks', async (req, res) => {
                 process.env.STRIPE_WEBHOOK_SECRET
             );
         } catch (err) {
-            console.log(`⚠️  Webhook signature verification failed.`);
+            console.log(`⚠️  Webhook signature verification failed. - `, err);
             return res.sendStatus(400);
         }
         data = event.data;
