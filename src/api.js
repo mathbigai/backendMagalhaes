@@ -94,33 +94,44 @@ app.post('/enviarPedidoAguardando', upload().single('anexo'), (req, res) => {
         .catch(error => res.json(error));
 })
 
+const monthsFromNow = (n) => {
+var d = new Date();
+return Math.floor(d.setMonth(d.getMonth() * n) / 1000);
+}
+
 app.post("/stripe/charge", cors(), async (req, res) => {
-    console.log("stripe-routes.js 9 | route reached", req.body);
-    let { amount, id, description } = req.body;
-    console.log("stripe-routes.js 10 | amount and id", amount, id, description);
+    let { customer, subscription };
     try {
-        const payment = await stripe.paymentIntents.create({
-            amount: amount,
-            currency: "BRL",
-            description: description,
-            payment_method: id,
-            confirm: true,
-            payment_method_types: ['card', 'boleto'],
-        });
-        console.log("stripe-routes.js 19 | payment", payment);
-        console.log("stripe-routes.js 19 | payment", payment.client_secret);
-        res.json({
-            message: "Payment Successful",
-            success: true,
-            client_secret: payment.client_secret,
-        });
+        console.log('criando cliente...')
+        customer = await stripe.customer.create({
+            email: req.body.email,
+            payment_method: req.body.payment_method,
+            invoice_settings: {
+                default_payment_method: req.body.payment_method
+            }
+        })
+        console.log('cliente criado: ', customer.id)
     } catch (error) {
-        console.log("stripe-routes.js 17 | error", error);
-        res.json({
-            message: "Payment Failed",
-            success: false,
-        });
+        console.log(e);
+        return res
+            .status(422)
+            .json({ message: 'Falha ao criar cliente.', details: e })
     }
+    try {
+        console.log('criando subscrição...')
+        subscription = await stripe.subscription.create({
+            customer: customer.id,
+            cancel_at: monthsFromNow(req.body.installments)
+        })
+        console.log('subscrição criado: ', subscription.id)
+    } catch (error) {
+        console.log(e);
+        return res
+            .status(422)
+            .json({ message: 'Falha ao criar subscrição.', details: e })
+    }
+
+    res.json(subscription)
 })
 
 app.post("/stripe/charge/secret", cors(), async (req, res) => {
@@ -148,41 +159,41 @@ app.post("/stripe/charge/secret", cors(), async (req, res) => {
 
 app.post('/webhook', async (req, res) => {
     let data, eventType;
-  
+
     // Check if webhook signing is configured.
     if (process.env.STRIPE_WEBHOOK_SECRET) {
-      // Retrieve the event by verifying the signature using the raw body and secret.
-      let event;
-      let signature = req.headers['stripe-signature'];
-      try {
-        event = stripe.webhooks.constructEvent(
-          req.rawBody,
-          signature,
-          process.env.STRIPE_WEBHOOK_SECRET
-        );
-      } catch (err) {
-        console.log(`⚠️  Webhook signature verification failed.`);
-        return res.sendStatus(400);
-      }
-      data = event.data;
-      eventType = event.type;
+        // Retrieve the event by verifying the signature using the raw body and secret.
+        let event;
+        let signature = req.headers['stripe-signature'];
+        try {
+            event = stripe.webhooks.constructEvent(
+                req.rawBody,
+                signature,
+                process.env.STRIPE_WEBHOOK_SECRET
+            );
+        } catch (err) {
+            console.log(`⚠️  Webhook signature verification failed.`);
+            return res.sendStatus(400);
+        }
+        data = event.data;
+        eventType = event.type;
     } else {
-      // Webhook signing is recommended, but if the secret is not configured in `config.js`,
-      // we can retrieve the event data directly from the request body.
-      data = req.body.data;
-      eventType = req.body.type;
+        // Webhook signing is recommended, but if the secret is not configured in `config.js`,
+        // we can retrieve the event data directly from the request body.
+        data = req.body.data;
+        eventType = req.body.type;
     }
-  
+
     if (eventType === 'payment_intent.succeeded') {
-      // Funds have been captured
-      // Fulfill any orders, e-mail receipts, etc
-      // To cancel the payment after capture you will need to issue a Refund (https://stripe.com/docs/api/refunds)
-      console.log('💰 Payment captured!');
+        // Funds have been captured
+        // Fulfill any orders, e-mail receipts, etc
+        // To cancel the payment after capture you will need to issue a Refund (https://stripe.com/docs/api/refunds)
+        console.log('💰 Payment captured!');
     } else if (eventType === 'payment_intent.payment_failed') {
-      console.log('❌ Payment failed.');
+        console.log('❌ Payment failed.');
     }
     res.sendStatus(200);
-  });
+});
 
 
 const server = http.createServer(app);
