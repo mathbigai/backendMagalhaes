@@ -94,45 +94,6 @@ app.post('/enviarPedidoAguardando', upload().single('anexo'), (req, res) => {
         .catch(error => res.json(error));
 })
 
-const monthsFromNow = (n) => {
-var d = new Date();
-return Math.floor(d.setMonth(d.getMonth() * n) / 1000);
-}
-
-app.post("/stripe/charge", cors(), async (req, res) => {
-    let { customer, subscription };
-    try {
-        console.log('criando cliente...')
-        customer = await stripe.customer.create({
-            email: req.body.email,
-            payment_method: req.body.payment_method,
-            invoice_settings: {
-                default_payment_method: req.body.payment_method
-            }
-        })
-        console.log('cliente criado: ', customer.id)
-    } catch (error) {
-        console.log(e);
-        return res
-            .status(422)
-            .json({ message: 'Falha ao criar cliente.', details: e })
-    }
-    try {
-        console.log('criando subscrição...')
-        subscription = await stripe.subscription.create({
-            customer: customer.id,
-            cancel_at: monthsFromNow(req.body.installments)
-        })
-        console.log('subscrição criado: ', subscription.id)
-    } catch (error) {
-        console.log(e);
-        return res
-            .status(422)
-            .json({ message: 'Falha ao criar subscrição.', details: e })
-    }
-
-    res.json(subscription)
-})
 
 app.post("/stripe/charge/secret", cors(), async (req, res) => {
     let { amount, description } = req.body;
