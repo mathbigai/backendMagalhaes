@@ -138,8 +138,6 @@ app.post('/webhooks', (req, res) => {
             success: false,
         });
     }
-    }
-    
   })
 
 
