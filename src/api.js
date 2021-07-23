@@ -123,9 +123,9 @@ app.post('/webhook', bodyParser.raw({type: 'application/json'}), (request, respo
     const sig = request.headers['stripe-signature'];
   
     let event;
-  
     try {
       event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+      console.log('Testando evento: ',event)
     }
     catch (err) {
       response.status(400).send(`Webhook Error: ${err.message}`);
