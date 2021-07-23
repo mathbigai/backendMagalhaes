@@ -141,12 +141,20 @@ app.post('/webhook', (request, response) => {
     }
 
     // Handle the checkout.session.completed event
-    if (event.type === 'checkout.session.completed') {
-        const session = event.data.object;
-console.log('FINALMENTE DEU CERTOOOO CARALHOOOO')
-        //Complete function here ...
-    }
-
+    switch (event.type) {
+        case 'charge.succeeded':
+            const session = event.data.object;
+            console.log(session)
+          break;
+        case 'charge.failed':
+            const session = event.data.object;
+            console.log(session)
+          break;
+        // ... handle other event types
+        default:
+          console.log(`Unhandled event type ${event.type}`);
+      }
+   
     // Return a response to acknowledge receipt of the event
     response.json({ received: true });
 
