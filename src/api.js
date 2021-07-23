@@ -8,7 +8,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST);
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const cors = require("cors");
 app.use(require("cors")());
-
+pp.use('/webhook', bodyParser.raw({ type: "*/*" }))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 
@@ -19,14 +19,14 @@ app.get('/', (req, res, next) => {
 const setupForStripeWebhooks = {
     // Because Stripe needs the raw body, we compute it but only when hitting the Stripe callback URL.
     verify: function (req, res, buf) {
-      var url = req.originalUrl;
-      if (url.startsWith('/webhook')) {
-        req.rawBody = buf.toString();
-      }
+        var url = req.originalUrl;
+        if (url.startsWith('/webhook')) {
+            req.rawBody = buf.toString();
+        }
     }
-  };
+};
 
-  app.use(bodyParser.json(setupForStripeWebhooks));
+app.use(bodyParser.json(setupForStripeWebhooks));
 
 
 app.post('/enviarContato', upload().single('anexo'), (req, res) => {
@@ -131,21 +131,29 @@ app.post("/stripe/charge/secret", cors(), async (req, res) => {
     }
 })
 
-app.post('/webhook', bodyParser.raw({type: 'application/json'}), (request, response) => {
+app.post('/webhook', (request, response) => {
     const sig = request.headers['stripe-signature'];
-  
     let event;
     try {
-      event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-      console.log('Testando evento: ',event)
+        event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+        console.log(event)
+    } catch (err) {
+        console.log(err)
+        return response.status(400).send(`Webhook Error: ${err.message}`);
+        
     }
-    catch (err) {
-      response.status(400).send(`Webhook Error: ${err.message}`);
-      console.log('Testando evento: ',err.message)
+
+    // Handle the checkout.session.completed event
+    if (event.type === 'checkout.session.completed') {
+        const session = event.data.object;
+
+        //Complete function here ...
     }
-  
-  
-  });
+
+    // Return a response to acknowledge receipt of the event
+    response.json({ received: true });
+
+});
 
 
 const server = http.createServer(app);
