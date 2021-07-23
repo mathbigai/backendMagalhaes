@@ -118,38 +118,31 @@ app.post("/stripe/charge/secret", cors(), async (req, res) => {
     }
 })
 
-app.use(bodyParser.json({
-    // Because Stripe needs the raw body, we compute it but only when hitting the Stripe callback URL.
-    verify: function (req, res, buf) {
-        var url = req.originalUrl;
-        if (url.startsWith('/stripe-webhooks')) {
-            req.rawBody = buf.toString()
-        }
+app.post('/webhook', bodyParser.raw({ type: 'application/json' }), (request, response) => {
+    const event = request.body;
+
+    // Handle the event
+    switch (event.type) {
+        case 'payment_intent.succeeded':
+            const paymentIntent = event.data.object;
+            console.log('PaymentIntent was successful!');
+            break;
+        case 'payment_method.attached':
+            const paymentMethod = event.data.object;
+            console.log('PaymentMethod was attached to a Customer!');
+            break;
+        case 'charge.succeeded':
+            const paymentMethod = event.data.object;
+            console.log('PaymentMethod was attached to a Customer!');
+            break;
+        // ... handle other event types
+        default:
+            console.log(`Unhandled event type ${event.type}`);
     }
-}));
 
-app
-    .use('/stripe-webhooks', stripeWebhookRoutes) //the webhooks must come before the default json body parser
-    .use(bodyParser.json())
-
-export const stripeWebhookRoutes = Router()
-    .use(bodyParser.raw({ type: '*/*' }))
-    .post('', eventParser(process.env.STRIPE_WEBHOOK_SECRET), mainStripeWebhook)
-    .post('/connect', eventParser(process.env.STRIPE_WEBHOOK_CONNECT_SECRET), connectStripeWebhook);
-
-function eventParser(secret) {
-    return (req, res, next) => {
-        try {
-            req.body = stripe.webhooks.constructEvent(
-                req.body.toString(),
-                req.headers['stripe-signature'],
-                secret);
-        } catch (error) {
-            return res.sendStatus(httpStatus.BAD_REQUEST);
-        }
-        return next();
-    }
-}
+    // Return a 200 response to acknowledge receipt of the event
+    response.json({ received: true });
+});
 
 
 const server = http.createServer(app);
