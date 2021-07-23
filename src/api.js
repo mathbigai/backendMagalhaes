@@ -11,29 +11,19 @@ app.use(require("cors")());
 app.use('/webhook', bodyParser.raw({ type: "*/*" }))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
-import firebase from 'firebase/app';
-import 'firebase/database';
 
-
-
-
-const config = {
-    apiKey: "AIzaSyBpyHo8D4e4cexDJX10qxIKDCrsdWp1FBA",
-    authDomain: "magalhaesbd-c856e.firebaseapp.com",
-    databaseURL: "https://magalhaesbd-c856e.firebaseio.com",
-    projectId: "magalhaesbd-c856e",
-    storageBucket: "magalhaesbd-c856e.appspot.com",
-    messagingSenderId: "717979424583",
-    appId: "1:717979424583:web:be20a8ef6480f453de9e62",
-    measurementId: "G-B4DMN4NT2N"
-  }
-
-  firebase.initializeApp(config);
-  const firestore = firebase.firestore();
+var admin = require('firebase-admin');
 
 app.get('/', (req, res, next) => {
     res.json({ message: "Tudo ok por aqui!" });
 })
+
+var serviceAccount = require("./magalhaesbd-c856e-firebase-adminsdk-w6bx1-11ebf7c9f7.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://magalhaesbd-c856e.firebaseio.com"
+});
 
 const setupForStripeWebhooks = {
     // Because Stripe needs the raw body, we compute it but only when hitting the Stripe callback URL.
@@ -163,12 +153,12 @@ app.post('/webhook', (request, response) => {
     
     if (event.type === 'charge.succeeded') {
         const session = event.data.object;
-        console.log(session.description)
+        console.log(session)
         //Complete function here ...
     }
     if (event.type === 'charge.failed') {
         const session = event.data.object;
-        console.log(session)
+        console.log(session.description)
         //Complete function here ...
     }
 
