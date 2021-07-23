@@ -156,7 +156,7 @@ app.post('/webhook', (request, response) => {
     if (event.type === 'charge.succeeded') {
         const session = event.data.object;
         console.log(session.description)
-        await firestore.collection('orders').doc(session.description).update({
+        firestore.collection('orders').doc(session.description).update({
             status: 'succeeded'
         });
     }
