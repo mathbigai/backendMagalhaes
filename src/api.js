@@ -118,7 +118,7 @@ app.post("/stripe/charge/secret", cors(), async (req, res) => {
     }
 })
 
-app.post('/webhook', bodyParser.raw({ type: 'application/json' }), (request, response) => {
+app.post('/webhook', (request, response) => {
     const event = request.body;
 
     // Handle the event
