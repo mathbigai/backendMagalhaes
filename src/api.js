@@ -8,7 +8,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST);
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const cors = require("cors");
 app.use(require("cors")());
-pp.use('/webhook', bodyParser.raw({ type: "*/*" }))
+app.use('/webhook', bodyParser.raw({ type: "*/*" }))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 
@@ -136,11 +136,8 @@ app.post('/webhook', (request, response) => {
     let event;
     try {
         event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-        console.log(event)
     } catch (err) {
-        console.log(err)
         return response.status(400).send(`Webhook Error: ${err.message}`);
-        
     }
 
     // Handle the checkout.session.completed event
