@@ -8,7 +8,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST);
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const cors = require("cors");
 app.use(require("cors")());
-app.use(bodyParser.json());
+app.use(bodyParser.json(setupForStripeWebhooks));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
@@ -16,6 +16,16 @@ app.use(express.urlencoded({ extended: true }))
 app.get('/', (req, res, next) => {
     res.json({ message: "Tudo ok por aqui!" });
 })
+
+const setupForStripeWebhooks = {
+    // Because Stripe needs the raw body, we compute it but only when hitting the Stripe callback URL.
+    verify: function (req, res, buf) {
+      var url = req.originalUrl;
+      if (url.startsWith('/webhook')) {
+        req.rawBody = buf.toString();
+      }
+    }
+  };
 
 app.post('/enviarContato', upload().single('anexo'), (req, res) => {
     const nome = req.body.nome;
