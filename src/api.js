@@ -131,10 +131,7 @@ app.post('/webhook', bodyParser.raw({type: 'application/json'}), (request, respo
       response.status(400).send(`Webhook Error: ${err.message}`);
     }
   
-    
   
-    // Return a response to acknowledge receipt of the event
-    response.json({received: true});
   });
 
 
