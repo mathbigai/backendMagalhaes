@@ -153,7 +153,7 @@ app.post('/webhook', (request, response) => {
     
     if (event.type === 'charge.succeeded') {
         const session = event.data.object;
-        console.log(session.id)
+        console.log(session.description)
         //Complete function here ...
     }
     if (event.type === 'charge.failed') {
