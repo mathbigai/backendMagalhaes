@@ -143,7 +143,7 @@ app.post('/webhook', (request, response) => {
     // Handle the checkout.session.completed event
     if (event.type === 'checkout.session.completed') {
         const session = event.data.object;
-
+console.log('FINALMENTE DEU CERTOOOO CARALHOOOO')
         //Complete function here ...
     }
 
