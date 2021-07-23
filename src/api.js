@@ -8,7 +8,6 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST);
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const cors = require("cors");
 app.use(require("cors")());
-app.use(bodyParser.json(setupForStripeWebhooks));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
@@ -26,6 +25,9 @@ const setupForStripeWebhooks = {
       }
     }
   };
+
+  app.use(bodyParser.json(setupForStripeWebhooks));
+
 
 app.post('/enviarContato', upload().single('anexo'), (req, res) => {
     const nome = req.body.nome;
