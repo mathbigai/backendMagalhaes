@@ -21,9 +21,11 @@ app.get('/', (req, res, next) => {
 var serviceAccount = require("./magalhaesbd-c856e-firebase-adminsdk-w6bx1-11ebf7c9f7.json");
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://magalhaesbd-c856e.firebaseio.com"
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: "https://magalhaesbd-c856e.firebaseio.com"
 });
+
+const firestore = admin.firestore();
 
 const setupForStripeWebhooks = {
     // Because Stripe needs the raw body, we compute it but only when hitting the Stripe callback URL.
@@ -150,11 +152,13 @@ app.post('/webhook', (request, response) => {
     }
 
     // Handle the checkout.session.completed event
-    
+
     if (event.type === 'charge.succeeded') {
         const session = event.data.object;
         console.log(session.description)
-        //Complete function here ...
+        await firestore.collection('orders').doc(session.description).update({
+            status: 'succeeded'
+        });
     }
     if (event.type === 'charge.failed') {
         const session = event.data.object;
