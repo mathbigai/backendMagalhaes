@@ -118,6 +118,39 @@ app.post("/stripe/charge/secret", cors(), async (req, res) => {
     }
 })
 
+app.use(bodyParser.json({
+    // Because Stripe needs the raw body, we compute it but only when hitting the Stripe callback URL.
+    verify: function (req, res, buf) {
+        var url = req.originalUrl;
+        if (url.startsWith('/stripe-webhooks')) {
+            req.rawBody = buf.toString()
+        }
+    }
+}));
+
+app
+    .use('/stripe-webhooks', stripeWebhookRoutes) //the webhooks must come before the default json body parser
+    .use(bodyParser.json())
+
+export const stripeWebhookRoutes = Router()
+    .use(bodyParser.raw({ type: '*/*' }))
+    .post('', eventParser(process.env.STRIPE_WEBHOOK_SECRET), mainStripeWebhook)
+    .post('/connect', eventParser(process.env.STRIPE_WEBHOOK_CONNECT_SECRET), connectStripeWebhook);
+
+function eventParser(secret) {
+    return (req, res, next) => {
+        try {
+            req.body = stripe.webhooks.constructEvent(
+                req.body.toString(),
+                req.headers['stripe-signature'],
+                secret);
+        } catch (error) {
+            return res.sendStatus(httpStatus.BAD_REQUEST);
+        }
+        return next();
+    }
+}
+
 
 const server = http.createServer(app);
 server.listen(process.env.PORT || 3030);
