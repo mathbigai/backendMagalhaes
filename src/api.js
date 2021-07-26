@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const upload = require("multer");
 require("dotenv");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST);
+const googleCredencial = process.env
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const cors = require("cors");
 app.use(require("cors")());
@@ -18,15 +19,10 @@ app.get('/', (req, res, next) => {
     res.json({ message: "Tudo ok por aqui!" });
 })
 
-
 admin.initializeApp({
-    credential: admin.credential.cert({
-      "projectId": process.env.FIREBASE_PROJECT_ID,
-      "private_key": process.env.FIREBASE_PRIVATE_KEY,
-      "client_email": process.env.FIREBASE_CLIENT_EMAIL,
-    }),
+    credential: firebaseAdminSdk.credential.cert(JSON.parse(Buffer.from(process.env.GOOGLE_CONFIG_BASE64, 'base64').toString('ascii'))),
     databaseURL: "https://magalhaesbd-c856e.firebaseio.com"
-  });
+});
 
 const firestore = admin.firestore();
 
