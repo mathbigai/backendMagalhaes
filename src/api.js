@@ -14,6 +14,7 @@ app.use(express.urlencoded({ extended: true }))
 const firebase = require('firebase');
 
 
+
 const firebaseConfig = {
     apiKey: "AIzaSyBpyHo8D4e4cexDJX10qxIKDCrsdWp1FBA",
     authDomain: "magalhaesbd-c856e.firebaseapp.com",
@@ -27,6 +28,10 @@ const firebaseConfig = {
 const db = firebase.initializeApp(firebaseConfig);
 
 const firestore = db.firestore();
+
+app.get('/', (req, res, next) => {
+    res.json({ message: "Tudo ok por aqui!" });
+})
 
 const setupForStripeWebhooks = {
     // Because Stripe needs the raw body, we compute it but only when hitting the Stripe callback URL.
