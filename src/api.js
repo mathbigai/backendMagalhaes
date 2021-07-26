@@ -7,6 +7,7 @@ require("dotenv");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST);
 const googleCredencial = process.env
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+const googleConfig = process.env.GOOGLE_CONFIG_BASE64;
 const cors = require("cors");
 app.use(require("cors")());
 app.use('/webhook', bodyParser.raw({ type: "*/*" }))
@@ -19,8 +20,10 @@ app.get('/', (req, res, next) => {
     res.json({ message: "Tudo ok por aqui!" });
 })
 
+console.log(googleConfig)
+
 admin.initializeApp({
-    credential: firebaseAdminSdk.credential.cert(JSON.parse(Buffer.from(process.env.GOOGLE_CONFIG_BASE64, 'base64').toString('ascii'))),
+    credential: admin.credential.cert(JSON.parse(Buffer.from(process.env.GOOGLE_CONFIG_BASE64, 'base64').toString('ascii'))),
     databaseURL: "https://magalhaesbd-c856e.firebaseio.com"
 });
 
