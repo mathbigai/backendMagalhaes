@@ -19,7 +19,7 @@ app.get('/', (req, res, next) => {
     res.json({ message: "Tudo ok por aqui!" });
 })
 
-var serviceAccount = require("google-credencials.json")(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+var serviceAccount = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
