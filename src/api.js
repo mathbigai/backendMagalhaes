@@ -5,28 +5,28 @@ const bodyParser = require('body-parser');
 const upload = require("multer");
 require("dotenv");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST);
-const googleCredencial = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const cors = require("cors");
 app.use(require("cors")());
 app.use('/webhook', bodyParser.raw({ type: "*/*" }))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
+const firebase = require('firebase');
 
-var admin = require('firebase-admin');
 
-app.get('/', (req, res, next) => {
-    res.json({ message: "Tudo ok por aqui!" });
-})
+const firebaseConfig = {
+    apiKey: "AIzaSyBpyHo8D4e4cexDJX10qxIKDCrsdWp1FBA",
+    authDomain: "magalhaesbd-c856e.firebaseapp.com",
+    databaseURL: "https://magalhaesbd-c856e.firebaseio.com",
+    projectId: "magalhaesbd-c856e",
+    storageBucket: "magalhaesbd-c856e.appspot.com",
+    messagingSenderId: "717979424583",
+    appId: "1:717979424583:web:be20a8ef6480f453de9e62"
+}
 
-var serviceAccount = require("./magalhaesbd-c856e-firebase-adminsdk-w6bx1-11ebf7c9f7.json");
+const db = firebase.initializeApp(firebaseConfig);
 
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://magalhaesbd-c856e.firebaseio.com"
-});
-
-const firestore = admin.firestore();
+const firestore = db.firestore();
 
 const setupForStripeWebhooks = {
     // Because Stripe needs the raw body, we compute it but only when hitting the Stripe callback URL.
