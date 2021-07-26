@@ -5,9 +5,7 @@ const bodyParser = require('body-parser');
 const upload = require("multer");
 require("dotenv");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST);
-const googleCredencial = process.env
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-const googleConfig = process.env.GOOGLE_CONFIG_BASE64;
 const cors = require("cors");
 app.use(require("cors")());
 app.use('/webhook', bodyParser.raw({ type: "*/*" }))
@@ -38,25 +36,6 @@ const setupForStripeWebhooks = {
 };
 
 app.use(bodyParser.json(setupForStripeWebhooks));
-
-const emailPagamentoAprovadoCliente = (emailCliente, nomeCliente, idCliente) => {
-    const nome = nomeCliente;
-    const email = emailCliente;
-    const id = idCliente;
-    require("./nodemailPagamentoAprovadoCliente")(email, nome, id)
-        .then(response => res.json(response))
-        .catch(error => res.json(error));
-}
-
-const emailPagamentoAprovadoMagalhaes = (emailCliente, nomeCliente, idCliente, celularCliente) => {
-    const nome = nomeCliente;
-    const email = emailCliente;
-    const id = idCliente;
-    const celular = celularCliente;
-    require("./nodemailPagamentoAprovadoMagalhaes")(email, nome, id, celular)
-        .then(response => res.json(response))
-        .catch(error => res.json(error));
-}
 
 
 app.post('/enviarContato', upload().single('anexo'), (req, res) => {
@@ -173,12 +152,10 @@ app.post('/webhook', (request, response) => {
     // Handle the checkout.session.completed event
 
     if (event.type === 'charge.succeeded') {
-        console.log(event.data.object)
         const session = event.data.object;
         firestore.collection('orders').doc(session.description).update({
             status: 'succeeded'
         });
-        
     }
     if (event.type === 'charge.failed') {
         const session = event.data.object;
