@@ -19,10 +19,10 @@ app.get('/', (req, res, next) => {
     res.json({ message: "Tudo ok por aqui!" });
 })
 
-var serviceAccount = require("./google-credencials.json");
+var serviceAccount = require(googleCredencial);
 
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+    credential: admin.credential.applicationDefault(),
     databaseURL: "https://magalhaesbd-c856e.firebaseio.com"
 });
 
