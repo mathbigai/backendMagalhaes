@@ -11,36 +11,24 @@ app.use(require("cors")());
 app.use('/webhook', bodyParser.raw({ type: "*/*" }))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
-const firebase = require('firebase');
 
-const {
-    API_KEY,
-    AUTH_DOMAIN,
-    DATABASE_URL,
-    PROJECT_ID,
-    STORAGE_BUCKET,
-    MESSAGING_SENDER_ID,
-    APP_ID
-} = process.env;
-
-
-const firebaseConfig = {
-    apiKey: API_KEY,
-    authDomain: AUTH_DOMAIN,
-    databaseURL: DATABASE_URL,
-    projectId: PROJECT_ID,
-    storageBucket: STORAGE_BUCKET,
-    messagingSenderId: MESSAGING_SENDER_ID,
-    appId: APP_ID
-}
-
-const db = firebase.initializeApp(firebaseConfig);
-
-const firestore = db.firestore();
+var admin = require('firebase-admin');
 
 app.get('/', (req, res, next) => {
     res.json({ message: "Tudo ok por aqui!" });
 })
+
+
+admin.initializeApp({
+    credential: admin.credential.cert({
+      "projectId": process.env.FIREBASE_PROJECT_ID,
+      "private_key": process.env.FIREBASE_PRIVATE_KEY,
+      "client_email": process.env.FIREBASE_CLIENT_EMAIL,
+    }),
+    databaseURL: "https://magalhaesbd-c856e.firebaseio.com"
+  });
+
+const firestore = admin.firestore();
 
 const setupForStripeWebhooks = {
     // Because Stripe needs the raw body, we compute it but only when hitting the Stripe callback URL.
