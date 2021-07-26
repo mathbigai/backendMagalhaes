@@ -13,16 +13,25 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 const firebase = require('firebase');
 
+const {
+    API_KEY,
+    AUTH_DOMAIN,
+    DATABASE_URL,
+    PROJECT_ID,
+    STORAGE_BUCKET,
+    MESSAGING_SENDER_ID,
+    APP_ID
+} = process.env;
 
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBpyHo8D4e4cexDJX10qxIKDCrsdWp1FBA",
-    authDomain: "magalhaesbd-c856e.firebaseapp.com",
-    databaseURL: "https://magalhaesbd-c856e.firebaseio.com",
-    projectId: "magalhaesbd-c856e",
-    storageBucket: "magalhaesbd-c856e.appspot.com",
-    messagingSenderId: "717979424583",
-    appId: "1:717979424583:web:be20a8ef6480f453de9e62"
+    apiKey: API_KEY,
+    authDomain: AUTH_DOMAIN,
+    databaseURL: DATABASE_URL,
+    projectId: PROJECT_ID,
+    storageBucket: STORAGE_BUCKET,
+    messagingSenderId: MESSAGING_SENDER_ID,
+    appId: APP_ID
 }
 
 const db = firebase.initializeApp(firebaseConfig);
