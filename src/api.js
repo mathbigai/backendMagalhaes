@@ -22,7 +22,7 @@ app.get('/', (req, res, next) => {
 var serviceAccount = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
 
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+    credential: admin.credential.cert(process.env.GOOGLE_APPLICATION_CREDENTIALS),
     databaseURL: "https://magalhaesbd-c856e.firebaseio.com"
 });
 
