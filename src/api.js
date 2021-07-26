@@ -173,12 +173,12 @@ app.post('/webhook', (request, response) => {
     // Handle the checkout.session.completed event
 
     if (event.type === 'charge.succeeded') {
+        console.log(event.data.object)
         const session = event.data.object;
         firestore.collection('orders').doc(session.description).update({
             status: 'succeeded'
         });
-        emailPagamentoAprovadoCliente(session.data.object.billing_details.email, session.data.object.billing_details.name, session.description)
-        emailPagamentoAprovadoMagalhaes(session.data.object.billing_details.email, session.data.object.billing_details.name, session.description, session.data.object.billing_details.phone)
+        
     }
     if (event.type === 'charge.failed') {
         const session = event.data.object;
