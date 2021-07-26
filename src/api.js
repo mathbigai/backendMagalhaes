@@ -20,8 +20,6 @@ app.get('/', (req, res, next) => {
     res.json({ message: "Tudo ok por aqui!" });
 })
 
-console.log(googleConfig)
-
 admin.initializeApp({
     credential: admin.credential.cert(JSON.parse(Buffer.from(process.env.GOOGLE_CONFIG_BASE64, 'base64').toString('ascii'))),
     databaseURL: "https://magalhaesbd-c856e.firebaseio.com"
@@ -40,6 +38,25 @@ const setupForStripeWebhooks = {
 };
 
 app.use(bodyParser.json(setupForStripeWebhooks));
+
+const emailPagamentoAprovadoCliente = (emailCliente, nomeCliente, idCliente) => {
+    const nome = nomeCliente;
+    const email = emailCliente;
+    const id = idCliente;
+    require("./nodemailPagamentoAprovadoCliente")(email, nome, id)
+        .then(response => res.json(response))
+        .catch(error => res.json(error));
+}
+
+const emailPagamentoAprovadoMagalhaes = (emailCliente, nomeCliente, idCliente, celularCliente) => {
+    const nome = nomeCliente;
+    const email = emailCliente;
+    const id = idCliente;
+    const celular = celularCliente;
+    require("./nodemailPagamentoAprovadoMagalhaes")(email, nome, id, celular)
+        .then(response => res.json(response))
+        .catch(error => res.json(error));
+}
 
 
 app.post('/enviarContato', upload().single('anexo'), (req, res) => {
@@ -157,15 +174,17 @@ app.post('/webhook', (request, response) => {
 
     if (event.type === 'charge.succeeded') {
         const session = event.data.object;
-        console.log(session.description)
         firestore.collection('orders').doc(session.description).update({
             status: 'succeeded'
         });
+        emailPagamentoAprovadoCliente(session.data.object.billing_details.email, session.data.object.billing_details.name, session.description)
+        emailPagamentoAprovadoMagalhaes(session.data.object.billing_details.email, session.data.object.billing_details.name, session.description, session.data.object.billing_details.phone)
     }
     if (event.type === 'charge.failed') {
         const session = event.data.object;
-        console.log(session)
-        //Complete function here ...
+        firestore.collection('orders').doc(session.description).update({
+            status: 'reprovado'
+        });
     }
 
     // Return a response to acknowledge receipt of the event
