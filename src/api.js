@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const upload = require("multer");
 require("dotenv");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST);
-const googleCredencial = process.env.GOOGLE_CREDENTIALS;
+const googleCredencial = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const cors = require("cors");
 app.use(require("cors")());
