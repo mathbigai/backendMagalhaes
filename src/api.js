@@ -134,6 +134,7 @@ app.post("/stripe/charge/secret", cors(), async (req, res) => {
             nextAction: payment.next_action
         });
     } catch (error) {
+		console.log(error);
         res.json({
             message: "Payment Failed",
             success: false,
