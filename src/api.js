@@ -123,9 +123,8 @@ app.post("/stripe/charge/secret", cors(), async (req, res) => {
         const payment = await stripe.paymentIntents.create({
             amount: amount,
             currency: "BRL",
-            payment_method_types: ['boleto'],
-            description: description,
-			expires_after_days: 4
+            payment_method_types: ['boleto', 'card'],
+            description: description
         });
         res.json({
             message: "Payment Successful",
