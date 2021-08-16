@@ -118,13 +118,14 @@ app.post('/enviarPedidoAguardando', upload().single('anexo'), (req, res) => {
 
 
 app.post("/stripe/charge/secret", cors(), async (req, res) => {
-    let { amount, description } = req.body;
+    let { amount, description, dias } = req.body;
     try {
         const payment = await stripe.paymentIntents.create({
             amount: amount,
             currency: "BRL",
             payment_method_types: ['boleto', 'card'],
-            description: description
+            description: description,
+			expires_after_days: dias
         });
         res.json({
             message: "Payment Successful",
