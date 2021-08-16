@@ -124,8 +124,7 @@ app.post("/stripe/charge/secret", cors(), async (req, res) => {
             amount: amount,
             currency: "BRL",
             payment_method_types: ['boleto', 'card'],
-            description: description,
-			expires_after_days: 3
+            description: description
         });
         res.json({
             message: "Payment Successful",
