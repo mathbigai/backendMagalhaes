@@ -4,7 +4,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const upload = require("multer");
 require("dotenv");
-const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST);
+const stripe = require("stripe")(process.env.STRIPE_SECRET);
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const cors = require("cors");
 app.use(require("cors")());
@@ -124,7 +124,6 @@ app.post("/stripe/charge/secret", cors(), async (req, res) => {
             amount: amount,
             currency: 'brl',
 			payment_method_types: ['boleto'],
-			expires_after_days: 4,
             description: description
         });
         res.json({
